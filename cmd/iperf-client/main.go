@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	// iperf_host = "server-service.default.svc.cluster.local"
-	iperf_host  = "127.0.0.1"
+	// host = "server-service.default.svc.cluster.local"
+	host        = "127.0.0.1"
+	port        = 5201
 	metricsPort = 9097
 )
 
@@ -30,9 +31,9 @@ func main() {
 		panic(err)
 	}
 
-	iperfHandler := promhttp.HandlerFor(iperfReg, promhttp.HandlerOpts{})
+	metricsHandler := promhttp.HandlerFor(iperfReg, promhttp.HandlerOpts{})
 
-	http.Handle("/metrics", iperfHandler)
+	http.Handle("/metrics", metricsHandler)
 	go func() {
 		fmt.Println("Starting metrics server...")
 		err := http.ListenAndServe(fmt.Sprintf(":%d", metricsPort), nil)
@@ -41,11 +42,11 @@ func main() {
 		}
 	}()
 
-	c := iperf.NewClient(iperf_host)
+	c := iperf.NewClient(host)
 	c.SetStreams(4)
 	c.SetTimeSec(30)
 	c.SetInterval(1)
-	c.SetPort(5201)
+	c.SetPort(port)
 	liveReports := c.SetModeLive()
 
 	go func() {
