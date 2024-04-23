@@ -47,7 +47,6 @@ func main() {
 	}
 	fmt.Println("Pinger running...")
 	pinger.Count = 3
-
 	ticker := time.NewTicker(5 * time.Second)
 	for range ticker.C {
 		err = pinger.Run() // Blocks until finished.
@@ -55,7 +54,6 @@ func main() {
 			panic(err)
 		}
 		stats := pinger.Statistics() // get send/receive/duplicate/rtt stats
-		fmt.Println(stats)
 		pingMetric.Set(float64(stats.AvgRtt))
 	}
 
