@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: combined-clients
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: combined-clients
+  template:
+    metadata:
+      labels:
+        app: combined-clients
+    spec:
+      containers:
+      - name: iperf-client
+        image: ptrvx/net-metrics/iperf-client:latest
+        ports:
+        - containerPort: 9097
+        env:
+        - name: IPERF_SERVER_HOST
+          value: "iperf-server"
+        - name: IPERF_SERVER_PORT
+          value: "5201"
+      - name: ping-client
+        image: ptrvx/net-metrics/ping-client:latest
+        ports:
+        - containerPort: 9098
+        env:
+        - name: PING_TARGET
+          value: "iperf-server"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf-client
+spec:
+  selector:
+    app: combined-clients
+  ports:
+    - protocol: TCP
+      port: 9097
+      targetPort: 9097
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ping-client
+spec:
+  selector:
+    app: combined-clients
+  ports:
+    - protocol: TCP
+      port: 9097
+      targetPort: 9098
+  type: ClusterIP
