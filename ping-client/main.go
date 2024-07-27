@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	probing "github.com/prometheus-community/pro-bing"
@@ -10,10 +11,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const (
-	// host = "server-service.default.svc.cluster.local"
-	host        = "google.com"
-	metricsPort = 9097
+var (
+	host        = os.Getenv("PING_TARGET")
+	metricsPort = os.Getenv("METRICS_PORT")
 )
 
 var (
@@ -35,7 +35,7 @@ func main() {
 	http.Handle("/metrics", metricsHandler)
 	go func() {
 		fmt.Println("Starting metrics server...")
-		err := http.ListenAndServe(fmt.Sprintf(":%d", metricsPort), nil)
+		err := http.ListenAndServe(fmt.Sprintf(":%v", metricsPort), nil)
 		if err != nil {
 			panic(err)
 		}

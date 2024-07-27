@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: iperf-client
-        image: ptrvx/net-metrics/iperf-client:latest
+        image: ptrvx/iperf-client:latest
         ports:
         - containerPort: 9097
         env:
@@ -22,13 +22,31 @@ spec:
           value: "iperf-server"
         - name: IPERF_SERVER_PORT
           value: "5201"
+        - name: "METRICS_PORT"
+          value: "9097"
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "100m"
       - name: ping-client
-        image: ptrvx/net-metrics/ping-client:latest
+        image: ptrvx/ping-client:latest
         ports:
         - containerPort: 9098
         env:
         - name: PING_TARGET
           value: "iperf-server"
+        - name: "METRICS_PORT"
+          value: "9098"
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +57,7 @@ spec:
     app: combined-clients
   ports:
     - protocol: TCP
+      name: metrics
       port: 9097
       targetPort: 9097
   type: ClusterIP
@@ -52,6 +71,7 @@ spec:
     app: combined-clients
   ports:
     - protocol: TCP
-      port: 9097
+      name: metrics
+      port: 9098
       targetPort: 9098
   type: ClusterIP

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iperf-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iperf-client
+  template:
+    metadata:
+      labels:
+        app: iperf-client
+    spec:
+      containers:
+      - name: iperf-client
+        image: ptrvx/net-metrics/iperf-client:latest
+        ports:
+        - containerPort: 9097
+        env:
+        - name: IPERF_SERVER_HOST
+          value: "iperf-server" # This should match the iperf-server service name
+        - name: IPERF_SERVER_PORT
+          value: "5201"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf-client
+spec:
+  selector:
+    app: iperf-client
+  ports:
+    - protocol: TCP
+      port: 9097
+      targetPort: 9097
+  type: ClusterIP

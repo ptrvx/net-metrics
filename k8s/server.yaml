@@ -14,9 +14,16 @@ spec:
     spec:
       containers:
       - name: iperf-server
-        image: ptrvx/net-metrics/iperf-server:latest
+        image: ptrvx/iperf-server:latest
         ports:
         - containerPort: 5201
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "500m"
+          requests:
+            memory: 256Mi
+            cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/BGrewell/go-iperf"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const (
-	// host = "server-service.default.svc.cluster.local"
-	host        = "127.0.0.1"
-	port        = 5201
-	metricsPort = 9097
+var (
+	host        = os.Getenv("IPERF_SERVER_HOST")
+	port        = os.Getenv("IPERF_SERVER_PORT")
+	metricsPort = os.Getenv("METRICS_PORT")
 )
 
 var (
@@ -36,7 +36,7 @@ func main() {
 	http.Handle("/metrics", metricsHandler)
 	go func() {
 		fmt.Println("Starting metrics server...")
-		err := http.ListenAndServe(fmt.Sprintf(":%d", metricsPort), nil)
+		err := http.ListenAndServe(fmt.Sprintf(":%v", metricsPort), nil)
 		if err != nil {
 			panic(err)
 		}
@@ -46,7 +46,12 @@ func main() {
 	c.SetStreams(4)
 	c.SetTimeSec(30)
 	c.SetInterval(1)
-	c.SetPort(port)
+	portInt, err := strconv.Atoi(port)
+	if err != nil {
+		fmt.Printf("failed to parse port value %v: %v", port, err)
+		os.Exit(-1)
+	}
+	c.SetPort(portInt)
 	liveReports := c.SetModeLive()
 
 	go func() {
@@ -57,7 +62,7 @@ func main() {
 		}
 	}()
 
-	err := c.Start()
+	err = c.Start()
 	if err != nil {
 		fmt.Printf("failed to start client: %v\n", err)
 		os.Exit(-1)
