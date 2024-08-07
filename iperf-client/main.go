@@ -35,7 +35,7 @@ func main() {
 
 	http.Handle("/metrics", metricsHandler)
 	go func() {
-		fmt.Println("Starting metrics server...")
+		fmt.Printf("Starting /metrics server on port %v\n", metricsPort)
 		err := http.ListenAndServe(fmt.Sprintf(":%v", metricsPort), nil)
 		if err != nil {
 			panic(err)
@@ -59,6 +59,8 @@ func main() {
 			// consider addding other metrics like congestion window
 			// also consider collecting multiple values and calculating average
 			iperfMetric.Set(report.BitsPerSecond)
+			// TODO: remove this, print the current speed for debugging
+			fmt.Println(report.BitsPerSecond)
 		}
 	}()
 
@@ -68,7 +70,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	fmt.Println("Watching live reports...")
+	fmt.Printf("Watching live reports from %v:%v\n", host, portInt)
 	<-c.Done
 
 	fmt.Println(c.Report().String())

@@ -2,9 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/BGrewell/go-iperf"
 )
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello, World!")
+}
 
 func main() {
 	s := iperf.NewServer()
@@ -15,7 +20,10 @@ func main() {
 		return
 	}
 	defer s.Stop()
-
 	fmt.Println("Server is running...")
-	select {} // Keeps the server running
+
+	http.HandleFunc("/", helloHandler)
+	if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
+		panic(err)
+	}
 }

@@ -1,0 +1,5 @@
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      name: scrape-configs
+      key: scrape-configs.yaml
