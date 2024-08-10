@@ -54,6 +54,9 @@ kind: Service
 metadata:
   name: iperf-client
   namespace: raf 
+  labels:
+    name: iperf-client
+    component: metrics
 spec:
   selector:
     app: combined-clients
@@ -68,7 +71,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ping-client
-  namespace: raf 
+  namespace: raf
+  labels:
+    name: ping-client
+    component: metrics
 spec:
   selector:
     app: combined-clients
