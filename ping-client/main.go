@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -41,7 +42,23 @@ func main() {
 		}
 	}()
 
-	pinger, err := probing.NewPinger(host)
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		panic(fmt.Sprintf("failed to lookup ip for %v: %v", host, err))
+	}
+	var ipv4 net.IP
+	for _, ip := range ips {
+		if ip.To4() != nil {
+			ipv4 = ip
+			break
+		}
+	}
+
+	if ipv4 == nil {
+		panic(fmt.Sprintf("failed to find IPv4 address for host: %v", host))
+	}
+
+	pinger, err := probing.NewPinger(ipv4.String())
 	if err != nil {
 		panic(err)
 	}
