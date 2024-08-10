@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -42,14 +43,29 @@ func main() {
 		}
 	}()
 
-	c := iperf.NewClient(host)
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		panic(fmt.Sprintf("failed to lookup ip for %v: %v", host, err))
+	}
+	var ipv4 net.IP
+	for _, ip := range ips {
+		if ip.To4() != nil {
+			ipv4 = ip
+			break
+		}
+	}
+
+	if ipv4 == nil {
+		panic(fmt.Sprintf("failed to find IPv4 address for host: %v", host))
+	}
+
+	c := iperf.NewClient(ipv4.String())
 	c.SetStreams(4)
 	c.SetTimeSec(30)
 	c.SetInterval(1)
 	portInt, err := strconv.Atoi(port)
 	if err != nil {
-		fmt.Printf("failed to parse port value %v: %v", port, err)
-		os.Exit(-1)
+		panic(fmt.Sprintf("failed to parse port value %v: %v", port, err))
 	}
 	c.SetPort(portInt)
 	liveReports := c.SetModeLive()
@@ -59,18 +75,15 @@ func main() {
 			// consider addding other metrics like congestion window
 			// also consider collecting multiple values and calculating average
 			iperfMetric.Set(report.BitsPerSecond)
-			// TODO: remove this, print the current speed for debugging
-			fmt.Println(report.BitsPerSecond)
 		}
 	}()
 
 	err = c.Start()
 	if err != nil {
-		fmt.Printf("failed to start client: %v\n", err)
-		os.Exit(-1)
+		panic(fmt.Sprintf("failed to start client: %v\n", err))
 	}
 
-	fmt.Printf("Watching live reports from %v:%v\n", host, portInt)
+	fmt.Printf("Watching live reports from %v:%v\n", c.Host(), c.Port())
 	<-c.Done
 
 	fmt.Println(c.Report().String())
