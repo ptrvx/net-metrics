@@ -20,6 +20,6 @@ WORKDIR /root/
 
 COPY --from=builder /app/ping-client .
 
-EXPOSE 9097
+EXPOSE 9098
 
 CMD ["./ping-client"]

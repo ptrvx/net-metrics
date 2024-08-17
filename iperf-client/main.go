@@ -74,7 +74,10 @@ func main() {
 		for report := range liveReports {
 			// consider addding other metrics like congestion window
 			// also consider collecting multiple values and calculating average
-			iperfMetric.Set(report.BitsPerSecond)
+
+			// transform into Kilobytes per second
+			iperfMetric.Set(report.BitsPerSecond / 8000)
+			fmt.Println(report.BitsPerSecond / 8000)
 		}
 	}()
 

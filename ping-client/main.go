@@ -35,7 +35,7 @@ func main() {
 
 	http.Handle("/metrics", metricsHandler)
 	go func() {
-		fmt.Println("Starting metrics server...")
+		fmt.Printf("Starting metrics server on port: %v\n", metricsPort)
 		err := http.ListenAndServe(fmt.Sprintf(":%v", metricsPort), nil)
 		if err != nil {
 			panic(err)
@@ -62,16 +62,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Pinger running...")
+	fmt.Printf("Pinging host %v(%v)...", host, ipv4.String())
 	pinger.Count = 3
 	ticker := time.NewTicker(5 * time.Second)
 	for range ticker.C {
 		err = pinger.Run() // Blocks until finished.
 		if err != nil {
+			// TODO: this doesn't need to panic
 			panic(err)
 		}
 		stats := pinger.Statistics() // get send/receive/duplicate/rtt stats
 		pingMetric.Set(float64(stats.AvgRtt))
+		fmt.Println(stats.AvgRtt)
 	}
 
 }

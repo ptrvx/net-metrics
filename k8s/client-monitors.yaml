@@ -11,7 +11,7 @@ spec:
       name: iperf-client
       component: metrics
   endpoints:
-  - port: metrics
+  - port: iperf-metrics
     path: /metrics
   namespaceSelector:
     matchNames:
@@ -30,7 +30,7 @@ spec:
       name: ping-client
       component: metrics
   endpoints:
-  - port: metrics
+  - port: ping-metrics
     path: /metrics
   namespaceSelector:
     matchNames:

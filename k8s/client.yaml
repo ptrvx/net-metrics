@@ -18,6 +18,7 @@ spec:
         image: ptrvx/iperf-client:latest
         ports:
         - containerPort: 9097
+          name: iperf-metrics
         env:
         - name: IPERF_SERVER_HOST
           value: "iperf-server"
@@ -36,6 +37,7 @@ spec:
         image: ptrvx/ping-client:latest
         ports:
         - containerPort: 9098
+          name: ping-metrics
         env:
         - name: PING_TARGET
           value: "iperf-server"
@@ -62,9 +64,9 @@ spec:
     app: combined-clients
   ports:
     - protocol: TCP
-      name: metrics
+      name: iperf-metrics
       port: 9097
-      targetPort: 9097
+      targetPort: iperf-metrics
   type: ClusterIP
 ---
 apiVersion: v1
@@ -80,7 +82,7 @@ spec:
     app: combined-clients
   ports:
     - protocol: TCP
-      name: metrics
+      name: ping-metrics
       port: 9098
-      targetPort: 9098
+      targetPort: ping-metrics
   type: ClusterIP

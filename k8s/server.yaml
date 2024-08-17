@@ -18,6 +18,7 @@ spec:
         image: ptrvx/iperf-server:latest
         ports:
         - containerPort: 5201
+          name: iperf-port
         resources:
           limits:
             memory: 512Mi
@@ -37,5 +38,5 @@ spec:
   ports:
     - protocol: TCP
       port: 5201
-      targetPort: 5201
+      targetPort: iperf-port
   type: ClusterIP
