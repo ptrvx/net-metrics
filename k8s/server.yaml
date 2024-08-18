@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: iperf-server
-  namespace: raf 
+  namespace: raf
 spec:
   replicas: 1
   selector:
@@ -14,24 +14,24 @@ spec:
         app: iperf-server
     spec:
       containers:
-      - name: iperf-server
-        image: ptrvx/iperf-server:latest
-        ports:
-        - containerPort: 5201
-          name: iperf-port
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: "500m"
-          requests:
-            memory: 256Mi
-            cpu: "250m"
+        - name: iperf-server
+          image: ptrvx/iperf-server:latest
+          ports:
+            - containerPort: 5201
+              name: iperf-port
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "500m"
+            requests:
+              memory: 256Mi
+              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: iperf-server
-  namespace: raf 
+  namespace: raf
 spec:
   selector:
     app: iperf-server
@@ -39,4 +39,4 @@ spec:
     - protocol: TCP
       port: 5201
       targetPort: iperf-port
-  type: ClusterIP
+  type: LoadBalancer

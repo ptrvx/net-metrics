@@ -28,7 +28,7 @@ func main() {
 	pingReg := prometheus.NewRegistry()
 
 	if err := pingReg.Register(pingMetric); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to register metric: %v", err))
 	}
 
 	metricsHandler := promhttp.HandlerFor(pingReg, promhttp.HandlerOpts{})
@@ -38,7 +38,7 @@ func main() {
 		fmt.Printf("Starting metrics server on port: %v\n", metricsPort)
 		err := http.ListenAndServe(fmt.Sprintf(":%v", metricsPort), nil)
 		if err != nil {
-			panic(err)
+			panic(fmt.Sprintf("failed to start metrics server: %v", err))
 		}
 	}()
 
@@ -60,7 +60,7 @@ func main() {
 
 	pinger, err := probing.NewPinger(ipv4.String())
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to start new pinger: %v", err))
 	}
 	fmt.Printf("Pinging host %v(%v)...", host, ipv4.String())
 	pinger.Count = 3
@@ -69,7 +69,7 @@ func main() {
 		err = pinger.Run() // Blocks until finished.
 		if err != nil {
 			// TODO: this doesn't need to panic
-			panic(err)
+			fmt.Printf("failed to run ping: %v\n", err)
 		}
 		stats := pinger.Statistics() // get send/receive/duplicate/rtt stats
 		pingMetric.Set(float64(stats.AvgRtt))

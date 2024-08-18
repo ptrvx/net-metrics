@@ -29,7 +29,7 @@ func main() {
 	iperfReg := prometheus.NewRegistry()
 
 	if err := iperfReg.Register(iperfMetric); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to register metric: %v", err))
 	}
 
 	metricsHandler := promhttp.HandlerFor(iperfReg, promhttp.HandlerOpts{})
@@ -39,7 +39,7 @@ func main() {
 		fmt.Printf("Starting /metrics server on port %v\n", metricsPort)
 		err := http.ListenAndServe(fmt.Sprintf(":%v", metricsPort), nil)
 		if err != nil {
-			panic(err)
+			panic(fmt.Sprintf("failed to start metrics server: %v", err))
 		}
 	}()
 

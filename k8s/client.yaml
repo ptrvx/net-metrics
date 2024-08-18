@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: combined-clients
-  namespace: raf 
+  namespace: raf
 spec:
   replicas: 1
   selector:
@@ -14,48 +14,48 @@ spec:
         app: combined-clients
     spec:
       containers:
-      - name: iperf-client
-        image: ptrvx/iperf-client:latest
-        ports:
-        - containerPort: 9097
-          name: iperf-metrics
-        env:
-        - name: IPERF_SERVER_HOST
-          value: "iperf-server"
-        - name: IPERF_SERVER_PORT
-          value: "5201"
-        - name: "METRICS_PORT"
-          value: "9097"
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: "250m"
-          requests:
-            memory: 128Mi
-            cpu: "100m"
-      - name: ping-client
-        image: ptrvx/ping-client:latest
-        ports:
-        - containerPort: 9098
-          name: ping-metrics
-        env:
-        - name: PING_TARGET
-          value: "iperf-server"
-        - name: "METRICS_PORT"
-          value: "9098"
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: "250m"
-          requests:
-            memory: 128Mi
-            cpu: "100m"
+        - name: iperf-client
+          image: ptrvx/iperf-client:latest
+          ports:
+            - containerPort: 9097
+              name: iperf-metrics
+          env:
+            - name: IPERF_SERVER_HOST
+              value: "iperf-server"
+            - name: IPERF_SERVER_PORT
+              value: "5201"
+            - name: "METRICS_PORT"
+              value: "9097"
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "250m"
+            requests:
+              memory: 128Mi
+              cpu: "100m"
+        - name: ping-client
+          image: ptrvx/ping-client:latest
+          ports:
+            - containerPort: 9098
+              name: ping-metrics
+          env:
+            - name: PING_TARGET
+              value: "iperf-server"
+            - name: "METRICS_PORT"
+              value: "9098"
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "250m"
+            requests:
+              memory: 128Mi
+              cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: iperf-client
-  namespace: raf 
+  namespace: raf
   labels:
     name: iperf-client
     component: metrics
@@ -67,7 +67,7 @@ spec:
       name: iperf-metrics
       port: 9097
       targetPort: iperf-metrics
-  type: ClusterIP
+  type: LoadBalancer
 ---
 apiVersion: v1
 kind: Service
@@ -85,4 +85,4 @@ spec:
       name: ping-metrics
       port: 9098
       targetPort: ping-metrics
-  type: ClusterIP
+  type: LoadBalancer

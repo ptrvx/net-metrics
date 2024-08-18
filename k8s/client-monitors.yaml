@@ -11,11 +11,11 @@ spec:
       name: iperf-client
       component: metrics
   endpoints:
-  - port: iperf-metrics
-    path: /metrics
+    - port: iperf-metrics
+      path: /metrics
   namespaceSelector:
     matchNames:
-    - raf
+      - raf
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -30,8 +30,8 @@ spec:
       name: ping-client
       component: metrics
   endpoints:
-  - port: ping-metrics
-    path: /metrics
+    - port: ping-metrics
+      path: /metrics
   namespaceSelector:
     matchNames:
-    - raf
+      - raf
